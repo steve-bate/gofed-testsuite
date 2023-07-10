@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"flag"
 	"fmt"
+	"gofed-testsuite/server"
 	"html/template"
 	"log"
 	"math/rand"
@@ -13,8 +13,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"time"
-
-	"github.com/go-fed/testsuite/server"
+	//"github.com/go-fed/testsuite/server"
 )
 
 const (
@@ -41,8 +40,8 @@ type CommandLineFlags struct {
 
 func NewCommandLineFlags() *CommandLineFlags {
 	c := &CommandLineFlags{
-		CertFile:     flag.String("cert", "tls.crt", "Path to certificate public key file"),
-		KeyFile:      flag.String("key", "tls.key", "Path to certificate private key file"),
+		//CertFile:     flag.String("cert", "tls.crt", "Path to certificate public key file"),
+		//KeyFile:      flag.String("key", "tls.key", "Path to certificate private key file"),
 		Hostname:     flag.String("host", "", "Host name of this instance (including TLD)"),
 		TemplatesDir: flag.String("templates", "./templates", "Directory containing the Go template files"),
 		StaticDir:    flag.String("static", "./static", "Directory containing statically-served files"),
@@ -53,9 +52,9 @@ func NewCommandLineFlags() *CommandLineFlags {
 		LogFile:      flag.String("logfile", "log.txt", "Log file to be able to audit spam & abuse"),
 	}
 	flag.Parse()
-	if err := c.validate(); err != nil {
-		panic(err)
-	}
+	//if err := c.validate(); err != nil {
+	//	panic(err)
+	//}
 	return c
 }
 
@@ -100,23 +99,23 @@ func main() {
 	c := NewCommandLineFlags()
 	rand.Seed(time.Now().Unix())
 
-	tlsConfig := &tls.Config{
-		MinVersion:               tls.VersionTLS12,
-		CurvePreferences:         []tls.CurveID{tls.CurveP256, tls.X25519},
-		PreferServerCipherSuites: true,
-		CipherSuites: []uint16{
-			tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
-			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
-			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-		},
-	}
+	//tlsConfig := &tls.Config{
+	//	MinVersion:               tls.VersionTLS12,
+	//	CurvePreferences:         []tls.CurveID{tls.CurveP256, tls.X25519},
+	//	PreferServerCipherSuites: true,
+	//	CipherSuites: []uint16{
+	//		tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+	//		tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+	//		tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+	//		tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+	//		tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+	//		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+	//	},
+	//}
 	httpsServer := &http.Server{
-		Addr:         ":https",
-		TLSConfig:    tlsConfig,
-		TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
+		Addr: ":9999",
+		//TLSConfig:    tlsConfig,
+		//TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
 	}
 
 	homeTmpl, err := c.homeTemplate()
@@ -138,7 +137,7 @@ func main() {
 	_ = server.NewWebServer(homeTmpl, aboutTmpl, newTestTmpl, testStatusTmpl, httpsServer, *c.Hostname, *c.TestTimeout, *c.MaxTests, *c.NotifyName, *c.NotifyLink, *c.StaticDir, *c.LogFile)
 
 	redir := &http.Server{
-		Addr:         ":http",
+		Addr:         ":8888",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -162,7 +161,7 @@ func main() {
 			log.Printf("HTTP redirect server ListenAndServe: %v", err)
 		}
 	}()
-	if err := httpsServer.ListenAndServeTLS(*c.CertFile, *c.KeyFile); err != nil {
+	if err := httpsServer.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }

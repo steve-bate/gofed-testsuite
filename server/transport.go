@@ -162,11 +162,11 @@ func HTTPSigTransport(c context.Context, a *ActorMapping) (t pub.Transport, err 
 	digestPref := httpsig.DigestSha256
 	getHeadersToSign := []string{httpsig.RequestTarget, "Date"}
 	postHeadersToSign := []string{httpsig.RequestTarget, "Date", "Digest"}
-	getSigner, _, err := httpsig.NewSigner(prefs, digestPref, getHeadersToSign, httpsig.Signature, 3600)
+	getSigner, _, err := httpsig.NewSigner(prefs, digestPref, getHeadersToSign, httpsig.Signature) //, 3600)
 	if err != nil {
 		return
 	}
-	postSigner, _, err := httpsig.NewSigner(prefs, digestPref, postHeadersToSign, httpsig.Signature, 3600)
+	postSigner, _, err := httpsig.NewSigner(prefs, digestPref, postHeadersToSign, httpsig.Signature) //, 3600)
 	if err != nil {
 		return
 	}
@@ -234,11 +234,11 @@ func verifyHttpSignatures(c context.Context,
 	digestPref := httpsig.DigestSha256
 	getHeadersToSign := []string{httpsig.RequestTarget, "Date"}
 	postHeadersToSign := []string{httpsig.RequestTarget, "Date", "Digest"}
-	getSigner, _, err := httpsig.NewSigner(prefs, digestPref, getHeadersToSign, httpsig.Signature, 3600)
+	getSigner, _, err := httpsig.NewSigner(prefs, digestPref, getHeadersToSign, httpsig.Signature) //, 3600)
 	if err != nil {
 		return
 	}
-	postSigner, _, err := httpsig.NewSigner(prefs, digestPref, postHeadersToSign, httpsig.Signature, 3600)
+	postSigner, _, err := httpsig.NewSigner(prefs, digestPref, postHeadersToSign, httpsig.Signature) //, 3600)
 	if err != nil {
 		return
 	}
