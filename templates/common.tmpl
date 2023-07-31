@@ -8,8 +8,9 @@
 	<link rel="stylesheet" href="/static/site.css">
 	<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/rawline" type="text/css">
 	<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/hack" type="text/css"/>
+	<script src="/static/testsuite.js"></script>
 </head>
-<body><div id="container">
+<body onload="load_forms();"><div id="container">
 	<header>
 	<nav>
 		<span class="sitename"><a href="/">Testsuite</a></span>
@@ -21,9 +22,7 @@
 	</header>
 	<div id="footerpusher"><div id="content">
 	<div class="notice">
-		<p>This unofficial testsuite is in alpha. Please file a
-		<a rel="noreferrer noopener" target="_blank" href="https://github.com/go-fed/testsuite/issues">bug report</a>
-		if you encounter an issue.</p>
+		<p>This unofficial testsuite is in alpha (fork of original test suite).</p>
 	</div>
 {{end}}
 {{define "common_bottom"}}

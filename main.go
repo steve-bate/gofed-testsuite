@@ -112,7 +112,7 @@ func main() {
 	//		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
 	//	},
 	//}
-	httpsServer := &http.Server{
+	httpServer := &http.Server{
 		Addr: ":9999",
 		//TLSConfig:    tlsConfig,
 		//TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
@@ -134,7 +134,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	_ = server.NewWebServer(homeTmpl, aboutTmpl, newTestTmpl, testStatusTmpl, httpsServer, *c.Hostname, *c.TestTimeout, *c.MaxTests, *c.NotifyName, *c.NotifyLink, *c.StaticDir, *c.LogFile)
+	_ = server.NewWebServer(homeTmpl, aboutTmpl, newTestTmpl, testStatusTmpl, httpServer, *c.Hostname, *c.TestTimeout, *c.MaxTests, *c.NotifyName, *c.NotifyLink, *c.StaticDir, *c.LogFile)
 
 	redir := &http.Server{
 		Addr:         ":8888",
@@ -152,7 +152,7 @@ func main() {
 		if err := redir.Shutdown(context.Background()); err != nil {
 			log.Printf("HTTP redirect server Shutdown: %v", err)
 		}
-		if err := httpsServer.Shutdown(context.Background()); err != nil {
+		if err := httpServer.Shutdown(context.Background()); err != nil {
 			log.Printf("HTTP server Shutdown: %v", err)
 		}
 	}()
@@ -161,7 +161,8 @@ func main() {
 			log.Printf("HTTP redirect server ListenAndServe: %v", err)
 		}
 	}()
-	if err := httpsServer.ListenAndServe(); err != nil {
+	log.Printf("HTTP server listening on port 9999...")
+	if err := httpServer.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }
